@@ -1,0 +1,15 @@
+var tile_manifest = [
+  {src: "./assets/art/ships/player-1.png", id: "ship1"},
+  {src: "./assets/art/ships/player-2.png", id: "ship2"},
+  {src: "./assets/art/ships/enemy-1.png", id: "enemy1"},
+  {src: "./assets/art/ships/enemy-2.png", id: "enemy2"},
+  {src: "./assets/art/ships/enemy-3.png", id: "enemy3"},
+  {src: "./assets/art/shots/1.png", id: "bullet_1"},
+  {src: "./assets/art/shots/3.png", id: "enemy_bullet_1"},
+  {src: "./assets/art/items/power-up-1.png", id: "powerup1"},
+  {src: "./assets/art/items/power-up-2.png", id: "powerup2"},
+  {src: "./assets/art/items/power-up-3.png", id: "powerup3"},
+  {src: "./assets/art/items/power-up-4.png", id: "powerup4"},
+  {src: "./assets/art/items/power-up-5.png", id: "powerup5"},
+  {src: "./assets/art/effects/fx-1.png", id: "fx-1"},
+];

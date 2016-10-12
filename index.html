@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>CIT Game</title>
+        <script src="createjs-2015.11.26.combined.js"></script>
+        <script src="humane.min.js"></script>
+        <link rel="stylesheet" href="flatty.min.css" media="screen" title="no title" charset="utf-8">
+        <style media="screen">
+            @font-face {
+              font-family: "Press Start";
+              src: url("assets/prstartk.ttf");
+            }
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+            .nav {
+                height: 5vh;
+                width: 100vw;
+                background-color: #2C333E;
+                min-height: 48px;
+            }
+            .nav button {
+                float: right;
+                width: 20%;
+                height: 5vh;
+                color: white;
+                cursor: pointer;
+                background-color: #2C333E;
+                border-left: 1px solid #eaeaea;
+                border-right: 1px solid #eaeaea;
+                border-top: 0;
+                border-bottom: 0;
+                min-height: 48px;
+            }
+            .nav button:hover {
+                background-color: #465163;
+            }
+            .CodeMirror {
+                position: relative;
+                overflow: hidden;
+                background: #fff;
+                width: 50vw !important;
+                margin: 0;
+                float: left;
+                height: 90vh !important;
+            }
+            canvas {
+                position: relative;
+                width: 50vw !important;
+                float: right;
+                height: 95vh;
+                background: black;
+            }
+            #pause-overlay {
+                background: rgba(0, 0, 0, 0.4);
+                width: 50vw;
+                height: 95vh;
+                position: absolute;
+                right: 0;
+                z-index: 999;
+                cursor: pointer;
+                display: none;
+            }
+            #pause-overlay h1 {
+                color: white;
+                text-align: center;
+                line-height: 90vh;
+                font-size: 10vh;
+                margin: 0;
+                font-family: sans-serif;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+            #img-logo {
+                height: 2vh;
+                padding-top: 2vh;
+                padding-left: 1vw;
+                min-height: 16px;
+            }
+        </style>
+        <script src="codemirror.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/mode/javascript/javascript.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.min.css"></script>
+    </head>
+    <body>
+        <div class="nav">
+            <img id="img-logo" src="http://codechangers.com/files/camp/assets/logo.png">
+            <!-- <button id="run-code">&#9654; Run Code</button> -->
+            <!-- <button id="load-level">Load Level</button> -->
+            <button id="save-code">&#128190; Save Code</button>
+            <!-- <button id="goto-editor">Go to Editor</button> -->
+        </div>
+        <textarea id="code-area"></textarea>
+        <div id="pause-overlay"><h1>&#9208; Paused</h1></div>
+        <canvas id="game-canvas" width="500" height="500"></canvas>
+        <script src="uuid.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+        <script>
+          // Initialize Firebase
+          var config = {
+            apiKey: "AIzaSyCEritwJNgyMxO0-UR1W3c5YY5h57K01_4",
+            authDomain: "codechangers-shmup.firebaseapp.com",
+            databaseURL: "https://codechangers-shmup.firebaseio.com",
+            storageBucket: "",
+          };
+          var app = firebase.initializeApp(config);
+        </script>
+        <script src="tiles.js"></script>
+        <!-- <script src="student.js"></script> -->
+        <script src="game.js"></script>
+        <script>
+            humane.timeout = 1250;
+
+            // var btnGotoEditor = document.getElementById("goto-editor");
+            // var btnLoad = document.getElementById("load-level");
+            var btnSave = document.getElementById("save-code");
+            var canvas = document.getElementById("game-canvas");
+            var textarea = document.getElementById("code-area");
+            var overlay = document.getElementById("pause-overlay");
+
+            var editor = CodeMirror.fromTextArea(textarea, {
+                lineNumbers: true,
+                mode: "javascript",
+            });
+            ev = window.eval;
+            canvas.focus();
+            function load_code() {
+                if(localStorage.getItem("cc_cit_code")) {
+                    editor.setValue(localStorage.getItem("cc_cit_code"));
+                    ev(localStorage.getItem("cc_cit_code"));
+                }
+            }
+
+            function run_code() {
+                var code = editor.getValue();
+                ev(code);
+            }
+
+            // btnGotoEditor.addEventListener("click", function () {
+            //     localStorage.setItem("code", editor.getValue());
+            //     document.location.href = "level_editor.html";
+            // });
+            //
+            // btnLoad.addEventListener('click', function () {
+            //     btnLoad.blur()
+            //     code = prompt("Enter a level code.");
+            //     app.database().ref("levels/" + code).once('value').then(function(snapshot) {
+            //         if (snapshot.val()) {
+            //             level = snapshot.val();
+            //             load_level_helper(level);
+            //             humane.log("Loaded \"" + code + "\".")
+            //         } else {
+            //             alert("Oops! That level doesn't exist.")
+            //         }
+            //     });
+            // });
+            btnSave.addEventListener('click', function () {
+                localStorage.setItem("cc_cit_code", editor.getValue());
+                humane.log("Code was saved.")
+            });
+
+            editor.getInputField().onfocus = function () {
+                createjs.Ticker.setPaused(true);
+                overlay.style.display = "block";
+            }
+
+            function unpause() {
+                editor.getInputField().blur();
+                createjs.Ticker.setPaused(false);
+                overlay.style.display = "none";
+                run_code()
+            }
+            overlay.onclick = unpause;
+
+            window.onblur = function () {
+                createjs.Ticker.setPaused(true);
+                overlay.style.display = "block";
+                enemy_interval = clearInterval(enemy_interval);
+            }
+        </script>
+    </body>
+</html>
